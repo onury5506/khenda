@@ -17,8 +17,8 @@ async function process() {
     let changes = []
 
     for (let i = 0; i < steps.length; i++) {
-        if(!Array.isArray(steps[i])){
-            throw "invalid data"
+        if(!Array.isArray(data[steps[i]])){
+            throw "invalid data (step is not array) "+steps[i]
         }
     }
 
@@ -50,7 +50,7 @@ async function processStep(data, stepName) {
         for (let j = 0; j < 3; j++) {
             let d = data[i + j]
             if (typeof d != "number" && !(d >= 0 && d <= 1)) {
-                throw "invalid data"
+                throw "invalid data - "+d
             }
         }
 
