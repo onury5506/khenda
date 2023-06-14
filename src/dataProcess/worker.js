@@ -17,15 +17,15 @@ async function process() {
     let changes = []
 
     for (let i = 0; i < steps.length; i++) {
-        if(!Array.isArray(data[steps[i]])){
-            throw "invalid data (step is not array) "+steps[i]
+        if (!Array.isArray(data[steps[i]])) {
+            throw "invalid data (step is not array) " + steps[i]
         }
     }
 
 
     for (let i = 0; i < steps.length; i++) {
         const step = steps[i]
-        let res = await processStep(data[step], step)
+        let res = processStep(data[step], step)
         changes = changes.concat(res)
     }
 
@@ -40,17 +40,17 @@ async function process() {
 
 }
 
-async function processStep(data, stepName) {
+function processStep(data, stepName) {
     let state = false
     let start = 0
 
     let changes = []
 
-    for (let i = 0; i <= data.length - 3; i++) {
-        for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < 3 && j + i < data.length; j++) {
             let d = data[i + j]
             if (typeof d != "number" && !(d >= 0 && d <= 1)) {
-                throw "invalid data - "+d
+                throw "invalid data - " + d
             }
         }
 
@@ -74,6 +74,19 @@ async function processStep(data, stepName) {
                 })
             }
         }
+    }
+
+    if (state) {
+        state = false
+        let end = Math.floor((data.length-1) / FPS) // frame to second
+
+        changes.push({
+            uuid: uuidv4(),
+            stepName,
+            startTime: start,
+            endTime: end,
+            video: id
+        })
     }
 
     return changes
