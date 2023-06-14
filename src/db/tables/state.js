@@ -5,8 +5,8 @@ export default function initStatesTable(knex){
                 t.increments('id').primary();
                 t.string('uuid', 100);
                 t.string('stepName', 100);
-                t.integer('startTime');
-                t.integer('endTime');
+                t.float('startTime');
+                t.float('endTime');
                 t.integer('video').unsigned().notNullable();
                 t.foreign('video').references('videos.id')
             });

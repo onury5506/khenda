@@ -63,8 +63,8 @@ function processStep(data, stepName) {
         if (overThreshold) {
             if (changeStart) {
                 if (!state) {
-                    start = Math.floor(start / FPS) // frame to second
-                    let end = Math.floor(i / FPS) // frame to second
+                    start = parseFloat((start / FPS).toFixed(1)) // frame to second
+                    let end = parseFloat((i / FPS).toFixed(1)) // frame to second
 
                     changes.push({
                         uuid: uuidv4(),
@@ -88,8 +88,8 @@ function processStep(data, stepName) {
     }
 
     if (changeStart) {
-        start = Math.floor(start / FPS) // frame to second
-        let end = Math.floor((data.length - 1) / FPS) // frame to second
+        start = parseFloat((start / FPS).toFixed(1)) // frame to second
+        let end = parseFloat(((data.length - 1) / FPS).toFixed(1)) // frame to second
 
         changes.push({
             uuid: uuidv4(),
