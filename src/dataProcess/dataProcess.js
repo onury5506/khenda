@@ -9,7 +9,9 @@ export async function addDataToQueue(filename) {
         status: 0
     })
 
-    runWorker()
+    runWorker().catch(e=>{
+        workerRunning = false
+    })
 
     return id[0]
 }

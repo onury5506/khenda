@@ -3,6 +3,7 @@ import multer from "multer";
 import { addDataToQueue } from "../../../dataProcess/dataProcess.js";
 import { videoStatuses } from "../../../db/tables/video.consts.js";
 import knex from '../../../db/db.js'
+import asyncWrapper from "../../../utils/asyncWrapper.js";
 
 const router = Router()
 
@@ -24,7 +25,7 @@ const fileFilter = function (req, file, cb) {
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-router.post("/", upload.single('file'), async (req, res) => {
+router.post("/", upload.single('file'), asyncWrapper(async (req, res) => {
     if (!req.file) {
         return res.sendStatus(400)
     }
@@ -38,9 +39,9 @@ router.post("/", upload.single('file'), async (req, res) => {
     } catch (e) {
         res.sendStatus(500)
     }
-})
+}))
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", asyncWrapper(async (req, res) => {
     const id = req.params.id
     const video = await knex.select("status")
         .from("videos")
@@ -66,6 +67,6 @@ router.get("/:id", async (req, res) => {
 
     res.send(changes)
 
-})
+}))
 
 export default router
