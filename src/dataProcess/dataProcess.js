@@ -10,7 +10,7 @@ export async function addDataToQueue(filename) {
     })
 
     runWorker()
-    
+
     return id[0]
 }
 
@@ -29,15 +29,24 @@ async function runWorker() {
     let next = await knex.select("id", "name")
         .from("videos")
         .where({
-            status: 2
+            status: 0
         }).first()
 
+    console.log("next", next)
     if (!next) {
         workerRunning = false;
         return;
     }
 
-    const worker = new Worker("./src/dataProcess/worker.js")
+    await knex("videos").where({
+        id: next.id
+    }).update({
+        status: 1
+    })
+
+    const worker = new Worker("./src/dataProcess/worker.js", {
+        workerData: next
+    })
 
 
     worker.on('message', message => {
@@ -46,6 +55,8 @@ async function runWorker() {
 
     worker.on('exit', code => {
         console.log(`Worker thread exited with code ${code}`);
+        workerRunning = false;
+        runWorker()
     });
 
     worker.on("error", console.error)
