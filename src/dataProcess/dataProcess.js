@@ -16,10 +16,6 @@ export async function addDataToQueue(filename) {
 
 async function runWorker() {
 
-    /*
-        TO DO
-    */
-
     if (workerRunning) {
         return;
     }
