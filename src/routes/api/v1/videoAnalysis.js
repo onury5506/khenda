@@ -1,5 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
+import { addDataToQueue } from "../../../dataProcess/dataProcess.js";
 
 const router = Router()
 
@@ -21,11 +22,20 @@ const fileFilter = function (req, file, cb) {
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-router.post("/", upload.single('file'), (req, res) => {
-    /*
-        TO-DO
-        upload data
-    */
+router.post("/", upload.single('file'), async (req, res) => {
+    if(!req.file){
+        return res.sendStatus(400)
+    }
+
+    try{
+        const id = await addDataToQueue(req.file.filename)
+
+        res.send({
+            id
+        })
+    }catch(e){
+        res.sendStatus(500)
+    }
 })
 
 router.get("/:id",(req,res)=>{
