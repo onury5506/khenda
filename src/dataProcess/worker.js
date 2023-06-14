@@ -43,42 +43,53 @@ async function process() {
 function processStep(data, stepName) {
     let state = false
     let start = 0
+    let changeStart = false;
 
     let changes = []
 
-    for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < 3 && j + i < data.length; j++) {
+    for (let i = 0; i <= data.length - 3; i++) {
+        let overThreshold = true
+        for (let j = 0; overThreshold && j < 3 && j + i < data.length; j++) {
             let d = data[i + j]
             if (typeof d != "number" && !(d >= 0 && d <= 1)) {
                 throw "invalid data - " + d
             }
+
+            if (d < threshold) {
+                overThreshold = false;
+            }
         }
 
+        if (overThreshold) {
+            if (changeStart) {
+                if (!state) {
+                    start = Math.floor(start / FPS) // frame to second
+                    let end = Math.floor(i / FPS) // frame to second
 
-        if (!state) {
-            if (data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold) {
+                    changes.push({
+                        uuid: uuidv4(),
+                        stepName,
+                        startTime: start,
+                        endTime: end,
+                        video: id
+                    })
+
+                    start = i
+                }
                 state = true
-                start = Math.floor(i / FPS) // frame to second
+            } else {
+                start = i
+                state = true
+                changeStart = true
             }
         } else {
-            if (data[i] < threshold) {
-                state = false
-                let end = Math.floor(i / FPS) // frame to second
-
-                changes.push({
-                    uuid: uuidv4(),
-                    stepName,
-                    startTime: start,
-                    endTime: end,
-                    video: id
-                })
-            }
+            state = false
         }
     }
 
-    if (state) {
-        state = false
-        let end = Math.floor((data.length-1) / FPS) // frame to second
+    if (changeStart) {
+        start = Math.floor(start / FPS) // frame to second
+        let end = Math.floor((data.length - 1) / FPS) // frame to second
 
         changes.push({
             uuid: uuidv4(),
