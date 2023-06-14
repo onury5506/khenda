@@ -16,6 +16,12 @@ async function process() {
     const steps = Object.keys(data)
     let changes = []
 
+    for (let i = 0; i < steps.length; i++) {
+        if(!Array.isArray(steps[i])){
+            throw "invalid data"
+        }
+    }
+
 
     for (let i = 0; i < steps.length; i++) {
         const step = steps[i]
@@ -44,7 +50,6 @@ async function processStep(data, stepName) {
         for (let j = 0; j < 3; j++) {
             let d = data[i + j]
             if (typeof d != "number" && !(d >= 0 && d <= 1)) {
-                console.log("invalid data")
                 throw "invalid data"
             }
         }
